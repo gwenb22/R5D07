@@ -2,8 +2,6 @@
 
 Un simulateur de Rubik's Cube 3D interactif et réaliste, développé avec **Three.js** et **Vite**. Ce projet inclut un tutoriel interactif, un solveur automatique, et est compatible mobile.
 
-![Rubik's Cube Demo](./public/screenshot.png) *(Note: Ajouter une capture d'écran ici si souhaité)*
-
 ## 🚀 Fonctionnalités
 
 ### 🎮 Gameplay Interactif
