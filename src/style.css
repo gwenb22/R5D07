@@ -1,0 +1,312 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none; /* Disable browser handling of gestures (scroll/zoom) */
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  display: block;
+}
+
+#game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0; /* Background */
+    touch-action: none; /* Explicitly disable on container too */
+}
+
+/* UI Overlay - sits on top */
+.ui-overlay {
+    position: fixed; /* Fixed to viewport to avoid scroll issues */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 10;
+    pointer-events: none; /* KEY: Pass through events to canvas */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Re-enable events for interactive children */
+.ui-overlay button, 
+.ui-overlay .pointer-active {
+    pointer-events: auto;
+}
+
+.hud-top {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.2);
+    padding: 10px 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    pointer-events: none; /* Container doesn't block */
+}
+
+.controls-bottom {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding-bottom: 20px;
+    pointer-events: none; /* Container doesn't block */
+    z-index: 20;
+}
+
+button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+    pointer-events: auto; /* ENFORCE CLICKABILITY */
+    z-index: 50; /* Ensure button itself is high up */
+    position: relative;
+}
+
+button:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Highest */
+    pointer-events: auto; /* Menu blocks game interactions */
+}
+
+.menu-content {
+    text-align: center;
+    background: #333;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.menu-title {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    font-weight: 800;
+    background: linear-gradient(45deg, #ff5900, #ff0055);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.difficulty-select {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.difficulty-btn {
+    padding: 15px 25px;
+    font-size: 1.2rem;
+    background: #444;
+}
+
+.difficulty-btn.active {
+    background: #ff5900;
+    border-color: #ff5900;
+}
+
+.start-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, #009E60, #00D180);
+    border: none;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.win-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,158,96, 0.9);
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+    box-shadow: 0 0 50px rgba(0,255,100,0.5);
+    z-index: 30;
+}
+
+.win-overlay.visible {
+    opacity: 1;
+}
+
+.tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 110; /* Higher than menu */
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.tutorial-overlay.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.tutorial-content {
+    background: #333;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.tutorial-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 10px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 1.1rem;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.tab-btn.active {
+    background: rgba(255,255,255,0.1);
+    color: #ff5900;
+}
+
+.tab-content {
+    display: none;
+    flex: 1;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s;
+}
+
+.solve-steps h3 {
+    color: #00D180;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.solve-steps code {
+    background: rgba(0,0,0,0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #ffdd00;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tutorial-content h2 {
+    margin-top: 0;
+    color: #ff5900;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.tutorial-content ul {
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.close-tutorial-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    background: linear-gradient(45deg, #009E60, #00D180);
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+}
